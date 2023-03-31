@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "create-env": "printenv > .env",
+    "create-env": "printenv > .env && node ./createEnv.js",
     "server": "nodemon ./server.js",
     "start": "node ./server.js"
   },
@@ -21,6 +21,7 @@
     "bootstrap": "^4.5.2",
     "bootstrap-vue": "^2.17.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.17.1",
     "http": "0.0.0",
     "material-icons": "^0.3.0",
