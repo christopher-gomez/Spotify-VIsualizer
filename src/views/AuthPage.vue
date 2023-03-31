@@ -9,7 +9,7 @@
         <p>Only a couple more steps before you can begin rocking out to sweet visuals!</p>
         <ol>
           <li>Right click the extension icon on your Chrome toolbar</li>
-          <li>Go down to "This Can Read and Change Site Data" and select "On spotilize.herokuapp.com"</li>
+          <li>Go down to "This Can Read and Change Site Data" and select "On spotilize.uc.r.appspot.com"</li>
           <li>Now go ahead and left click that extension icon!</li>
         </ol>
         <small>(Forget the app URL! You'll click that extension icon everytime you want to use the app from now on, otherwise the visualizer wont function properly. Trust me!)</small><br><br>

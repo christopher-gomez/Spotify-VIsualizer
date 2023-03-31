@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
 var baseURL;
 var port;
 if (config === undefined) {
-	baseURL = "https://spotilize.herokuapp.com";
+	baseURL = "https://spotilize.uc.r.appspot.com";
 	port = "";
 } else {
 	baseURL = config.baseURL;

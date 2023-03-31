@@ -336,7 +336,10 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+@import "~@/assets/scss/vendors/bootstrap-vue/index";
+@import "~@/plugins/boot.scss";
+
 html {
   height: 100%;
   overflow: hidden;

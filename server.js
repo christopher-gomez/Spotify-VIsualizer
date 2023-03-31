@@ -21,11 +21,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 const spotifyRoutes = require('./expressRoutes/spotifyRoutes.js')(app, io);
 app.use('/spotify', spotifyRoutes);
-app.use("/", serveStatic(path.join(__dirname, '/dist')));
+// If not accessing the API, serve up the frontend
+app.use("/", serveStatic(path.join(__dirname, "/dist"), { etag: false, lastModified: false }));
 // Catch all routes and redirect to the index file
-app.get('*', function (req, res) {
-	res.sendFile(__dirname + '/dist/index.html')
-})
+app.get("*", (req, res) => {
+  res.set({ "Content-Type": "text/html" });
+  res.sendFile(path.join(__dirname, "/dist/index.html"), { etag: false, lastModified: false });
+});
 
 
 /*// Middleware for serving '/dist' directory

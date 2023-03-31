@@ -64,7 +64,7 @@ var background = {
 		chrome.tabs.getSelected((tab) => {
 			
 			background.tabId = tab.id
-			let matches = ["https://spotilize.herokuapp.com/visualizer", 'http://localhost:8080/visualizer'];
+			let matches = ["https://spotilize.uc.r.appspot.com/visualizer", 'http://localhost:8080/visualizer'];
 			let onsite = false;
 
 			for (let j in matches) {
@@ -75,14 +75,14 @@ var background = {
 
 			if (onsite === false) {
 				chrome.tabs.update(background.tabId, {
-					url: "https://spotilize.herokuapp.com"
+					url: "https://spotilize.uc.r.appspot.com"
 				});
 			}
 
 			background.startCap();
 			chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 				// do something here
-				let matches2 = ["https://spotilize.herokuapp.com", "https://spotilize.herokuapp.com/visualizer", 'http://localhost:8080', 'http://localhost:8080/visualizer']
+				let matches2 = ["https://spotilize.uc.r.appspot.com", "https://spotilize.uc.r.appspot.com/visualizer", 'http://localhost:8080', 'http://localhost:8080/visualizer']
 				let ons = false;
 				for (let i in matches2) {
 					if (tab.url.includes(matches2[i])) {

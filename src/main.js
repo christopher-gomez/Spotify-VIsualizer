@@ -1,17 +1,13 @@
+import '@babel/polyfill'
+import 'mutationobserver-shim'
 import Vue from 'vue';
+import './plugins/bootstrap-vue'
 import App from './App.vue';
 import router from './router';
-var config;
-if (process.env.NODE_ENV !== 'production') {
-  config = require('../config/settings');
-}
 
 import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
 
-import BootstrapVue from 'bootstrap-vue';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueSocketIO from 'vue-socket.io';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -40,10 +36,13 @@ import VueWait from 'vue-wait'
 Vue.use(VueWait);
 var baseURL;
 var port;
-if (config === undefined) {
-  baseURL = "spotilize.herokuapp.com";
+var config;
+
+if (process.env.NODE_ENV === 'production' || !process.env.NODE_ENV) {
+  baseURL = "https://spotilize.uc.r.appspot.com";
   port = "";
 } else {
+  let config = require('../config/settings');
   baseURL = config.baseURL;
   port = config.serverPort;
 }
@@ -90,7 +89,6 @@ library.add(faLevelUpAlt);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
-Vue.use(BootstrapVue);
 Vue.use(VueMaterial);
 
 import NProgress from 'vue-nprogress'
