@@ -20,7 +20,30 @@ var io = require("socket.io")(server);
 app.use(morgan("combined"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://spotilize.uc.r.appspot.com/',
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin 
+    // (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not ' +
+        'allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: false,
+};
+
+app.use(cors(corsOptions));
+
 const spotifyRoutes = require("./expressRoutes/spotifyRoutes.js")(app, io);
 app.use("/spotify", spotifyRoutes);
 // If not accessing the API, serve up the frontend
@@ -48,7 +71,7 @@ app.use(staticFileMiddleware);
 
 // Support history api 
 app.use(history({
-	index: '/dist/index.html'
+  index: '/dist/index.html'
 }));
 
 // 2nd call for redirected requests
