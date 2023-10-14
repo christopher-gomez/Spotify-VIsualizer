@@ -9,8 +9,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = function (app, io) {
 	var spotifyRoute = express.Router();
-	const my_client_id = process.env.spotifyClientId || config.spotifyClientId;
-	const my_client_secret = process.env.spotifyClientSecret || config.spotifyClientSecret;
+	const spotilize_client_id = process.env.spotilizeClientId || config.spotifyClientId;
+	const spotilize_client_secret = process.env.spotilizeClientSecret || config.spotifyClientSecret;
+
+	const cloudPlayer_client_id = process.env.cloudPlayerClientId || config.cloudPlayerClientId;
+	const cloudPlayer_client_secret = process.env.cloudPlayerClientSecret || config.cloudPlayerClientSecret;
+
 	var port;
 	if (config !== undefined) {
 		port = config.clientPort;
@@ -18,13 +22,14 @@ module.exports = function (app, io) {
 		port = "";
 	}
 	const baseURL = process.env.baseURL || config.baseURL;
-	const redirect_uri = baseURL+ port + "/success";
+	const redirect_uri = baseURL + port + "/success";
 
+	const cloudPlayerRedirectURI = process.env.cloudPlayerBaseURL + process.env.cloudPlayerRedirectURL;
 	/***********************************SOCKET**********************************************/
 
 	io.on('connection', function (socket) {
 		console.log('client connected');
-		
+
 		socket.on('ready', (data) => {
 			//transferPlayback(data.id, data.access_token, data.play);
 			socket.emit('playerReady', data);
@@ -41,7 +46,7 @@ module.exports = function (app, io) {
 		socket.on('paused', () => {
 			socket.emit('paused');
 		});
-		
+
 		socket.on('played', () => {
 			socket.emit('played');
 		})
@@ -57,7 +62,7 @@ module.exports = function (app, io) {
 			redirect: 'https://accounts.spotify.com/authorize' +
 				'?response_type=code' +
 				'&client_id=' +
-				my_client_id +
+				spotilize_client_id +
 				(scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
 				'&redirect_uri=' + encodeURIComponent(redirect_uri) +
 				'&show_dialog=true'
@@ -67,23 +72,39 @@ module.exports = function (app, io) {
 	spotifyRoute.route('/authorize').post((req, res) => {
 		var code = req.body.code;
 
+		let clientID;
+		let clientSecret;
+		let redirectURL;
+		switch (req.body.app) {
+			case 'CloudPlayer':
+				clientID = cloudPlayer_client_id;
+				clientSecret = cloudPlayer_client_secret;
+				redirectURL = cloudPlayerRedirectURI;
+				break;
+			case 'spotilize':
+			default:
+				clientID = spotilize_client_id;
+				clientSecret = spotilize_client_secret;
+				redirectURL = redirect_uri;
+		}
+
 		var authOptions = {
 			url: 'https://accounts.spotify.com/api/token',
 			form: {
 				code: code,
-				redirect_uri: redirect_uri,
+				redirect_uri: redirectURL,
 				grant_type: 'authorization_code'
 			},
 			headers: {
-				'Authorization': 'Basic ' + (new Buffer(my_client_id + ':' + my_client_secret).toString('base64'))
+				'Authorization': 'Basic ' + (new Buffer(clientID + ':' + clientSecret).toString('base64'))
 			},
 			json: true
 		};
 		request.post(authOptions, function (error, response, body) {
 			if (!error && response.statusCode === 200) {
 				console.log('spotify auth successful');
-					access_token = body.access_token;
-					refresh_token = body.refresh_token;
+				access_token = body.access_token;
+				refresh_token = body.refresh_token;
 				return res.status(200).send({
 					success: true,
 					access_token: access_token,
@@ -100,7 +121,20 @@ module.exports = function (app, io) {
 
 	spotifyRoute.route('/access_token/refresh').post((req, res) => {
 		refresh_token = req.body.refresh_token;
-		console.log(" Refresh: " + refresh_token);
+
+		let clientID;
+		let clientSecret;
+		switch (req.body.app) {
+			case 'CloudPlayer':
+				clientID = cloudPlayer_client_id;
+				clientSecret = cloudPlayer_client_secret;
+				break;
+			case 'spotilize':
+			default:
+				clientID = spotilize_client_id;
+				clientSecret = spotilize_client_secret;
+		}
+
 		var authOptions = {
 			url: 'https://accounts.spotify.com/api/token',
 			form: {
@@ -108,7 +142,7 @@ module.exports = function (app, io) {
 				refresh_token: refresh_token
 			},
 			headers: {
-				'Authorization': 'Basic ' + (new Buffer(my_client_id + ':' + my_client_secret).toString('base64'))
+				'Authorization': 'Basic ' + (new Buffer(clientID + ':' + clientSecret).toString('base64'))
 			},
 			json: true
 		};
@@ -151,7 +185,7 @@ module.exports = function (app, io) {
 	spotifyRoute.route('/pause').put((req, res) => {
 		pause(req.body.access_token, res);
 	})
-	
+
 	spotifyRoute.route('/next').post((req, res) => {
 		next(req.body.access_token, res);
 	});
@@ -179,7 +213,7 @@ module.exports = function (app, io) {
 	spotifyRoute.route('/profile/:access_token').get((req, res) => {
 		return getProfile(req.params.access_token, res);
 	});
-	
+
 	spotifyRoute.route('/top_artists/:access_token').get((req, res) => {
 		return getTopArtists(req.params.access_token, res);
 	});
@@ -228,7 +262,7 @@ module.exports = function (app, io) {
 			});
 		}
 		var options = {
-			url: 'https://api.spotify.com/v1/me/playlists?offset='+offset+"&limit=5",
+			url: 'https://api.spotify.com/v1/me/playlists?offset=' + offset + "&limit=5",
 			headers: {
 				'Authorization': 'Bearer ' + token
 			},
@@ -256,7 +290,7 @@ module.exports = function (app, io) {
 			});
 		}
 		var options = {
-			url: 'https://api.spotify.com/v1/playlists/'+id+'/tracks?offset='+offset+"&limit=20",
+			url: 'https://api.spotify.com/v1/playlists/' + id + '/tracks?offset=' + offset + "&limit=20",
 			headers: {
 				'Authorization': 'Bearer ' + token
 			},
@@ -317,7 +351,7 @@ module.exports = function (app, io) {
 			});
 		}
 		var options = {
-			url: 'https://api.spotify.com/v1/tracks/'+id,
+			url: 'https://api.spotify.com/v1/tracks/' + id,
 			headers: {
 				'Authorization': 'Bearer ' + token
 			},
@@ -468,7 +502,7 @@ module.exports = function (app, io) {
 		options = {
 			url: "https://api.spotify.com/v1/me/player/devices",
 			headers: {
-					'Authorization': 'Bearer ' + token,
+				'Authorization': 'Bearer ' + token,
 			},
 			json: true
 		}
@@ -570,7 +604,7 @@ module.exports = function (app, io) {
 			res.send({
 				success: true
 			});
-		} catch(error) {
+		} catch (error) {
 			console.log(error);
 			Promise.reject(error);
 			res.send({
@@ -670,7 +704,7 @@ module.exports = function (app, io) {
 			});
 		}
 		options = {
-			url: "https://api.spotify.com/v1/me/player/seek?position_ms="+ms,
+			url: "https://api.spotify.com/v1/me/player/seek?position_ms=" + ms,
 			headers: {
 				'Authorization': 'Bearer ' + token,
 			},
@@ -727,7 +761,7 @@ module.exports = function (app, io) {
 			method: `PUT`,
 			uri: "https://api.spotify.com/v1/me/player/repeat?state=" + trackContextOff,
 			headers: {
-				'Authorization': 'Bearer '+token
+				'Authorization': 'Bearer ' + token
 			},
 			json: true
 		};
@@ -767,7 +801,7 @@ module.exports = function (app, io) {
 		}
 		var options = {
 			method: `PUT`,
-			uri: "https://api.spotify.com/v1/me/player/volume?volume_percent="+volumePercent,
+			uri: "https://api.spotify.com/v1/me/player/volume?volume_percent=" + volumePercent,
 			headers: {
 				'Authorization': 'Bearer ' + token
 			},
