@@ -57,7 +57,7 @@ var server = require("http").createServer(app);
 var io = require("socket.io")(server, {
   cors: {
     origin: allowedOrigins,  // Reuse your allowedOrigins array
-    methods: ["GET", "POST", "OPTIONS", "POST"],  // Specify HTTP methods allowed for the handshake
+    methods: ["GET", "POST", "OPTIONS", "POST", "PUT"],  // Specify HTTP methods allowed for the handshake
     credentials: false
   }
 });
