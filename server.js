@@ -18,6 +18,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'https://spotilize.uc.r.appspot.com',
+  'wss://spotilize.uc.r.appspot.com'
 ];
 
 // const corsOptions = {
