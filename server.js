@@ -17,6 +17,7 @@ if (process.env.NODE_ENV !== "production") {
 const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://spotilize.uc.r.appspot.com',
   'https://spotilize.uc.r.appspot.com',
   'wss://spotilize.uc.r.appspot.com'
 ];
@@ -55,7 +56,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 var server = require("http").createServer(app);
-var io = require("socket.io")(server, { origins: '*:*' });
+var io = require("socket.io")(server, {
+
+  handlePreflightRequest: (req, res) => {
+    const headers = {
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Credentials": true
+    };
+
+    if (allowedOrigins.includes(req.headers.origin)) {
+      headers["Access-Control-Allow-Origin"] = req.headers.origin; //or the specific origin you want to give access to,    
+    }
+
+    res.writeHead(200, headers);
+    res.end();
+  }
+});
 
 const spotifyRoutes = require("./expressRoutes/spotifyRoutes.js")(app, io);
 app.use("/spotify", spotifyRoutes);
