@@ -54,7 +54,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 var server = require("http").createServer(app);
-var io = require("socket.io")(server);
+var io = require("socket.io")(server, {
+  cors: {
+    origin: allowedOrigins,  // Reuse your allowedOrigins array
+    methods: ["GET", "POST", "OPTIONS", "POST"],  // Specify HTTP methods allowed for the handshake
+    credentials: false
+  }
+});
 
 const spotifyRoutes = require("./expressRoutes/spotifyRoutes.js")(app, io);
 app.use("/spotify", spotifyRoutes);
