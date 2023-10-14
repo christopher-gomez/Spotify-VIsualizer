@@ -15,12 +15,6 @@ if (process.env.NODE_ENV !== "production") {
 
 // Set up the app
 const app = express();
-var server = require("http").createServer(app);
-var io = require("socket.io")(server);
-app.use(morgan("combined"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
 const allowedOrigins = [
   'http://localhost:3000',
   'https://spotilize.uc.r.appspot.com/',
@@ -43,6 +37,12 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+var server = require("http").createServer(app);
+var io = require("socket.io")(server);
+app.use(morgan("combined"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const spotifyRoutes = require("./expressRoutes/spotifyRoutes.js")(app, io);
 app.use("/spotify", spotifyRoutes);
