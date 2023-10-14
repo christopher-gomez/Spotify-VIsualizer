@@ -17,32 +17,44 @@ if (process.env.NODE_ENV !== "production") {
 const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://spotilize.uc.r.appspot.com/',
+  'https://spotilize.uc.r.appspot.com',
 ];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin 
-    // (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin 
+//     // (like mobile apps or curl requests)
+//     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not ' +
-        'allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: false,
-};
+//     if (allowedOrigins.indexOf(origin) === -1) {
+//       const msg = 'The CORS policy for this site does not ' +
+//         'allow access from the specified Origin.';
+//       return callback(new Error(msg), false);
+//     }
+//     return callback(null, true);
+//   },
+//   credentials: false,
+// };
 
-app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
 
-var server = require("http").createServer(app);
-var io = require("socket.io")(server);
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, POST, PUT');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', true);
+  return next();
+});
+
+// app.use(cors(corsOptions));
 app.use(morgan("combined"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+var server = require("http").createServer(app);
+var io = require("socket.io")(server);
 
 const spotifyRoutes = require("./expressRoutes/spotifyRoutes.js")(app, io);
 app.use("/spotify", spotifyRoutes);
