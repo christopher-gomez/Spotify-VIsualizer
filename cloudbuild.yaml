@@ -9,7 +9,7 @@ steps:
     - 'baseURL=${_BASE_URL}'
     - 'spotilizeClientId=${_CLIENT_ID}'
     - 'spotilizeClientSecret=${_CLIENT_SECRET}'
-    - 'cloudPlayerCliendId=${_CLOUD_PLAYER_CLIENT_ID}'
+    - 'cloudPlayerClientId=${_CLOUD_PLAYER_CLIENT_ID}'
     - 'cloudPlayerClientSecret=${_CLOUD_PLAYER_CLIENT_SECRET}'
     - 'cloudPlayerBaseURL=${_CLOUD_PLAYER_BASE_URL}'
     - 'cloudPlayerRedirectURL=${_CLOUD_PLAYER_REDIRECT_URL}'
