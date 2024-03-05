@@ -19,7 +19,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://spotilize.uc.r.appspot.com',
   'https://spotilize.uc.r.appspot.com',
-  'wss://spotilize.uc.r.appspot.com'
+  'wss://spotilize.uc.r.appspot.com',
+  'https://tiles-416322.web.app'
 ];
 
 // const corsOptions = {
