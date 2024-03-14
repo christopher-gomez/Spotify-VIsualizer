@@ -28,8 +28,7 @@ module.exports = function (app, io) {
   const baseURL = process.env.baseURL || config.baseURL;
   const redirect_uri = baseURL + port + "/success";
 
-  const cloudPlayerRedirectURI =
-    process.env.cloudPlayerBaseURL + process.env.cloudPlayerRedirectURL;
+  const cloudPlayerRedirectURI = process.env.cloudPlayerRedirectURL;
   /***********************************SOCKET**********************************************/
 
   io.on("connection", function (socket) {
@@ -72,7 +71,7 @@ module.exports = function (app, io) {
             "streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state " +
             "playlist-read-private playlist-read-collaborative user-library-read " +
             "user-read-playback-position user-read-recently-played user-top-read";
-          redirect = cloudPlayerRedirectURI;
+          redirect = req.get('Origin') + cloudPlayerRedirectURI;
           break;
         case "spotilize":
         default:
@@ -122,7 +121,7 @@ module.exports = function (app, io) {
       case "CloudPlayer":
         clientID = cloudPlayer_client_id;
         clientSecret = cloudPlayer_client_secret;
-        redirectURL = cloudPlayerRedirectURI;
+        redirectURL = req.get('Origin') + cloudPlayerRedirectURI;
         break;
       case "spotilize":
       default:
