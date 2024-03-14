@@ -20,7 +20,8 @@ const allowedOrigins = [
   'http://spotilize.uc.r.appspot.com',
   'https://spotilize.uc.r.appspot.com',
   'wss://spotilize.uc.r.appspot.com',
-  'https://tiles-416322.web.app'
+  'https://tiles-7cf7b.web.app',
+  'https://tiles-7cf7b.firebaseapp.com'
 ];
 
 // const corsOptions = {
