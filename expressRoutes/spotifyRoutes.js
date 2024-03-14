@@ -81,16 +81,16 @@ module.exports = function (app, io) {
             "playlist-read-private playlist-read-collaborative user-read-private user-read-birthdate user-read-email user-read-playback-state user-read-currently-playing user-modify-playback-state app-remote-control streaming user-top-read user-read-recently-played user-library-read";
           redirect = redirect_uri;
       }
-      return res.redirect(
-        "https://accounts.spotify.com/authorize" +
+      return res.status(200).send({
+        link:
+          "https://accounts.spotify.com/authorize" +
           "?response_type=code" +
           "&client_id=" +
           clientID +
           (scopes ? "&scope=" + encodeURIComponent(scopes) : "") +
           "&redirect_uri=" +
-          encodeURIComponent(redirect) +
-          "&show_dialog=true"
-      );
+          encodeURIComponent(redirect),
+      });
     } else {
       clientID = spotilize_client_id;
       scopes =
