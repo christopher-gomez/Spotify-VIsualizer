@@ -106,8 +106,7 @@ module.exports = function (app, io) {
         clientID +
         (scopes ? "&scope=" + encodeURIComponent(scopes) : "") +
         "&redirect_uri=" +
-        encodeURIComponent(redirect) +
-        "&show_dialog=true",
+        encodeURIComponent(redirect)
     });
   });
 
