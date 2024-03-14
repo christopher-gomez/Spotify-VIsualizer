@@ -59,7 +59,7 @@ module.exports = function (app, io) {
 
   /***********************************ROUTES**********************************************/
 
-  spotifyRoute.route("/link").get((req, res) => {
+  spotifyRoute.route("/link").post((req, res) => {
     var scopes = "";
     var clientID = "";
     var redirect = "";
